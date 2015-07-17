@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 
-class Subreddit(models.Model):
+class Subsaiddit(models.Model):
     name = models.CharField(max_length=64)
     description = models.CharField(max_length=200)
 
@@ -11,22 +11,22 @@ class Subreddit(models.Model):
 
 
 class User(models.Model):
-    name = models.CharField(max_length=64)
+    username = models.CharField(max_length=64)
     password = models.CharField(max_length=64)
 
     def __unicode__(self):
-        return u'%s %s' % (self.first_name, self.last_name)
+        return u'%s' % self.username
 
 
 class Post(models.Model):
     title = models.CharField(max_length=64)
     content = models.TextField()
     score = models.IntegerField()
-    subreddit = models.ForeignKey(Subreddit)
+    subsaiddit = models.ForeignKey(Subsaiddit)
     user = models.ForeignKey(User)
 
     def __unicode__(self):
-        return u'Title:%s by:%s on %s' % (self.title, self.user, self.content)
+        return u'Title:%s by:%s on %s' % (self.title, self.user, self.subsaiddit)
 
 
 class Comment(models.Model):
