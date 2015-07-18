@@ -15,7 +15,7 @@
     <ul>
     {% for post in posts reversed%}
         <li>
-            <a href="/post/{{ post.id }}/">{{ post.title }}</a>
+            <a href="/r/{{ post.subsaiddit.name }}/{{ post.id }}/">{{ post.title }}</a>
             <a href="/r/{{ post.subsaiddit.name }}/">({{ post.subsaiddit.name }})</a>
         </li>
     {% endfor %}

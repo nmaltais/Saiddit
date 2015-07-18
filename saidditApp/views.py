@@ -79,7 +79,7 @@ def logoutfunc(request):
     return redirect("/")
 
 
-def viewpostpage(request, postid):
+def viewpostpage(request, subsaidditname, postid):
     c = {}
     if request.user.is_authenticated():
         c.update({'loggedinuser': request.user})
@@ -110,7 +110,7 @@ def addpostpage(request, subsaidditname):
             subsaiddit = Subsaiddit.objects.get(name=subsaidditname)
             post = Post(title=title, content=content, score=0, user=user, subsaiddit=subsaiddit)
             post.save()
-            return redirect("/post/%d/" % post.id)
+            return redirect("/r/%s/%d/" % (subsaidditname,post.id))
         else:
             return render_to_response("saidditApp/addpost.html", c, context_instance=RequestContext(request))
     else:
@@ -119,12 +119,13 @@ def addpostpage(request, subsaidditname):
 
 def addcommentfunc(request, postid):
     c = {}
+    post = Post.objects.get(id=postid)
     if request.user.is_authenticated():
         user = request.user
         c.update({})
         if request.method == 'POST':
             content = request.POST['content']
-            post = Post.objects.get(id=postid)
             comment = Comment(content=content, score=0, user=user, post=post)
             comment.save()
-    return redirect("/post/%d/" % postid)
+    subsaidditname = post.subsaiddit.name
+    return redirect("/r/%s/%d/" % (subsaidditname, post.id))
