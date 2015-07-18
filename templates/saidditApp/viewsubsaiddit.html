@@ -12,7 +12,7 @@
 {% if posts %}
     <ul>
     {% for post in posts reversed%}
-        <li><a href="/r/{{ subsaiddit.name }}/{{ post.id }}/">{{ post.title }}</a> {{ post.score }} <a>UP</a> <a>DN</a></li>
+        <li><a href="/r/{{ subsaiddit.name }}/{{ post.id }}/">{{ post.title }}</a> {{ post.score }} <a href="/postvote/up/{{ post.id }}/subsaiddit/">UP</a>|<a href="/postvote/down/{{ post.id }}/subsaiddit/">DN</a></li>
     {% endfor %}
     </ul>
 {% else %}

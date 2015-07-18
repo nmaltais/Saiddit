@@ -23,6 +23,8 @@
     {% if comments %}
         <ul>
         {% for comment in comments %}
+            <a href="/commentvote/up/{{ comment.id }}/">UP</a>|<a href="/commentvote/down/{{ comment.id }}/">DN</a>
+            {{ comment.score }}
             <li>{{ comment.user }}
                 <br/>
                 {{ comment.content }}

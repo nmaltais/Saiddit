@@ -37,3 +37,27 @@ class Comment(models.Model):
 
     def __unicode__(self):
         return u'%s (Author:%s on post:%s)' % (self.content, self.user, self.post)
+
+
+class PostVote(models.Model):
+    user = models.ForeignKey(User)
+    post = models.ForeignKey(Post)
+    direction = models.IntegerField(choices=(
+        (-1, "up"),
+        (1, "down"),
+    ))
+
+    def __unicode__(self):
+        return u'(%s voted %s on post ID %d)' % (self.user.username, self.direction, self.post.id)
+
+
+class CommentVote(models.Model):
+    user = models.ForeignKey(User)
+    comment = models.ForeignKey(Comment)
+    direction = models.IntegerField(choices=(
+        (-1, "up"),
+        (1, "down"),
+    ))
+
+    def __unicode__(self):
+        return u'(%s voted %s on post ID %d)' % (self.user.username, self.direction, self.comment.id)

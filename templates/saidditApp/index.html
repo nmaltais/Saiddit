@@ -7,14 +7,45 @@
 <body>
     <h1>Home page</h1>
 
+
+
+
+
+
 {%  if loggedinuser %}
     <p>Hi {{ loggedinuser }}, <a href="/logout/">logout</a></p>
+{% else %}
+    {%  if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <section class="container">
+        <div class="login">
+          <form method="post" action="/login/">
+              {% csrf_token %}
+            <p><input type="text" name="username" value="" placeholder="Username"></p>
+            <p><input type="password" name="password" value="" placeholder="Password"></p>
+            <!--<p class="remember_me">
+              <label>
+                <input type="checkbox" name="remember_me" id="remember_me">
+                Remember me on this computer
+              </label>
+            </p>-->
+            <p class="submit"><input type="submit" name="submit" value="Login"></p>
+          </form>
+        </div>
+
+        <!--<div class="login-help">
+          <p>Forgot your password? <a href="index.html">Click here to reset it</a>.</p>
+        </div>-->
+    </section>
 {% endif %}
 
 {% if posts %}
     <ul>
     {% for post in posts reversed%}
         <li>
+            {{ post.score }}
+            <a href="/postvote/up/{{ post.id }}/home/">UP</a>|<a href="/postvote/down/{{ post.id }}/home/">DN</a>
             <a href="/r/{{ post.subsaiddit.name }}/{{ post.id }}/">{{ post.title }}</a>
             <a href="/r/{{ post.subsaiddit.name }}/">({{ post.subsaiddit.name }})</a>
         </li>
