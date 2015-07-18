@@ -6,5 +6,22 @@
 </head>
 <body>
     <h1>Home page</h1>
+
+{%  if loggedinuser %}
+    <p>Hi {{ loggedinuser }}, <a href="/logout/">logout</a></p>
+{% endif %}
+
+{% if posts %}
+    <ul>
+    {% for post in posts reversed%}
+        <li>
+            <a href="/post/{{ post.id }}/">{{ post.title }}</a>
+            <a href="/r/{{ post.subsaiddit.name }}/">({{ post.subsaiddit.name }})</a>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    No posts
+{% endif %}
 </body>
 </html>

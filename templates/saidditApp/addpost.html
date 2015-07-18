@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <h1>Add post form for {{ subsaidditname }}</h1>
+    {% if subsaidditname %}
+    <form method="post" action="/addpost/{{ subsaidditname }}/">
+        {% csrf_token %}
+        <p><input type="text" name="title" value="" placeholder="[Title]"></p>
+        <textarea name="content" value="" placeholder="[Content]"></textarea>
+
+        <p class="submit"><input type="submit" name="submit" value="Post"></p>
+    </form>
+    {% endif %}
+</body>
+</html>

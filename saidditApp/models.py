@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 class Subsaiddit(models.Model):
@@ -9,13 +9,13 @@ class Subsaiddit(models.Model):
     def __unicode__(self):
         return u'%s' % self.name
 
-
-class User(models.Model):
-    username = models.CharField(max_length=64)
-    password = models.CharField(max_length=64)
-
-    def __unicode__(self):
-        return u'%s' % self.username
+# USING DJANGO'S USER MODEL. FROM django.contrib.auth.models tO USE THE AUTHENTICATE(), LOGIN() & LOGOUT()
+#class User(models.Model):
+#    username = models.CharField(max_length=64)
+#    password = models.CharField(max_length=64)
+#
+#    def __unicode__(self):
+#        return u'%s' % self.username
 
 
 class Post(models.Model):

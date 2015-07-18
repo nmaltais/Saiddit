@@ -1,17 +1,25 @@
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
+from django.template import RequestContext
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 
 # Create your views here.
 from saidditApp.models import *
 
 
 def homepage(request):
-    return render_to_response("saidditApp/index.html", {
-        'subsaiddits': Subsaiddit.objects.all()
-    })
+    c = {}
+    c.update({'posts': Post.objects.all()})
+
+    if request.user.is_authenticated():
+        c.update({'loggedinuser': request.user.username})
+    return render_to_response("saidditApp/index.html", c)
 
 
 def viewsubsaidditpage(request, subsaidditname):
-
+    c = {}
+    if request.user.is_authenticated():
+        c.update({'loggedinuser': request.user})
     try:
         subsaiddit = Subsaiddit.objects.get(name=subsaidditname)
     except Subsaiddit.DoesNotExist:
@@ -20,24 +28,61 @@ def viewsubsaidditpage(request, subsaidditname):
     try:
         posts = Post.objects.filter(subsaiddit=subsaiddit)
     except Post.DoesNotExist:
+        c.update({'subsaiddit': subsaiddit})
+        return render_to_response("saidditApp/viewsubsaiddit.html", c,  context_instance=RequestContext(request))
 
-        return render_to_response(("saidditApp/viewsubsaiddit.html"), {
-            'subsaiddit' : subsaiddit
-        })
+    c.update({'posts': posts, 'subsaiddit': subsaiddit})
+    return render_to_response("saidditApp/viewsubsaiddit.html", c,  context_instance=RequestContext(request))
 
-    return render_to_response("saidditApp/viewsubsaiddit.html", {
-        'posts': posts,
-        'subsaiddit': subsaiddit
-    })
+
+def registerpage(request):
+    c = {}
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        newuser = User.objects.create_user(username, '', password)
+        newuser.save()
+
+        return redirect("/login/")
+    else:
+        return render_to_response("saidditApp/register.html", c, context_instance=RequestContext(request))
 
 
 def loginpage(request):
-    return render_to_response("saidditApp/login.html", {
-        'users': User.objects.all()
-    })
+    c = {}
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect("/")
+            else:
+                # Return a 'disabled account' error message
+                pass
+        else:
+            #Not authenticated
+            c.update({'message': "Authentication failed"})
+            return render_to_response("saidditApp/login.html", c, context_instance=RequestContext(request))
+    else:
+        #No one tried login in
+        return render_to_response("saidditApp/login.html", c, context_instance=RequestContext(request))
+
+
+def logoutfunc(request):
+    if request.user.is_authenticated():
+        logout(request)
+
+    return redirect("/")
 
 
 def viewpostpage(request, postid):
+    c = {}
+    if request.user.is_authenticated():
+        c.update({'loggedinuser': request.user})
     try:
         post = Post.objects.get(id=postid)
 
@@ -47,12 +92,39 @@ def viewpostpage(request, postid):
     try:
         comments = Comment.objects.filter(post=post)
     except Comment.DoesNotExist:
-        return render_to_response("saidditApp/viewpost.html", {
-            'post': post
-        })
+        c.update({'post': post})
+        return render_to_response("saidditApp/viewpost.html", c, context__instance=RequestContext(request))
 
-    return render_to_response("saidditApp/viewpost.html", {
-            'post': post,
-            'comments': comments
-        })
+    c.update({'post': post, 'comments': comments})
+    return render_to_response("saidditApp/viewpost.html", c, context_instance=RequestContext(request))
 
+
+def addpostpage(request, subsaidditname):
+    c = {}
+    if request.user.is_authenticated():
+        user = request.user
+        c.update({'subsaidditname': subsaidditname})
+        if request.method == 'POST':
+            title = request.POST['title']
+            content = request.POST['content']
+            subsaiddit = Subsaiddit.objects.get(name=subsaidditname)
+            post = Post(title=title, content=content, score=0, user=user, subsaiddit=subsaiddit)
+            post.save()
+            return redirect("/post/%d/" % post.id)
+        else:
+            return render_to_response("saidditApp/addpost.html", c, context_instance=RequestContext(request))
+    else:
+        return redirect("/r/%s" % subsaidditname)
+
+
+def addcommentfunc(request, postid):
+    c = {}
+    if request.user.is_authenticated():
+        user = request.user
+        c.update({})
+        if request.method == 'POST':
+            content = request.POST['content']
+            post = Post.objects.get(id=postid)
+            comment = Comment(content=content, score=0, user=user, post=post)
+            comment.save()
+    return redirect("/post/%d/" % postid)
